@@ -26,8 +26,7 @@ jobs:
       contents: read
 
     env:
-      DEV_REGION: us-east-2
-      PROD_REGION: us-east-1
+      AWS_REGION: 'us-east-1'
       DEV_EXECUTION_ROLE_ARN: ${{ secrets.DEV_INFRA_EXECUTION_ROLE_ARN }}
       PROD_EXECUTION_ROLE_ARN: ${{ secrets.PROD_INFRA_EXECUTION_ROLE_ARN }}
 
@@ -39,10 +38,8 @@ jobs:
         run: |
           if [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
             echo "ENV=dev" >> "${GITHUB_ENV}"
-            echo "AWS_REGION=${DEV_REGION}" >> "${GITHUB_ENV}"
           elif [[ "${GITHUB_REF}" == "refs/heads/prod" ]]; then
             echo "ENV=prod" >> $GITHUB_ENV
-            echo "AWS_REGION=${PROD_REGION}" >> "${GITHUB_ENV}"
           else
             echo "${GITHUB_REF} is invalid..."
           fi
