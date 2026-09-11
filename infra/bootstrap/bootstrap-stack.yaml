@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Stack to construct the baseline. It includes OIDC, Permissions Boundary, Execution Roles, Deployment Roles
+Description: Stack to construct the baseline. It includes OIDC, Permissions Boundary, Execution Roles, Deployment Roles, Validation Roles.
 
 Parameters:
   Environment:
