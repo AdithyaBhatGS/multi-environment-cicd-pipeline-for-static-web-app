@@ -49,10 +49,10 @@
   },
   {
     "ParameterKey": "AvailabilityZoneA",
-    "ParameterValue": "us-east-2a"
+    "ParameterValue": "us-east-1a"
   },
   {
     "ParameterKey": "AvailabilityZoneB",
-    "ParameterValue": "us-east-2b"
+    "ParameterValue": "us-east-1b"
   }
 ]
