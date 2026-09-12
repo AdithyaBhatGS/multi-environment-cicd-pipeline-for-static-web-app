@@ -64,6 +64,10 @@ The project is constructed to solve these problems through:
 
 ## Architecture
 
+### Architecture Diagrams
+
+> Will be added shortly!!
+
 The platform is divided into two primary components:
 
 ### Infrastructure
@@ -189,3 +193,24 @@ The current pipelines use environment-specific GitHub Actions concurrency contro
 - **`.github/workflows/`** — CI/CD workflows for validation and deployment.
 - **`requirements.txt`** — Python dependencies used by the platform.
 - **`security/checkov/organization_policies`** - Custom `checkov` policies for scanning the infrastructure.
+
+## Roadmap & Planned Improvements
+
+1. **App : Auto Remediation**
+
+- Will add auto remediation functionality.
+- Helps users not only to detect drift, observe the recent changes but also to fix them through the application UI.
+
+2. **App/Infra: Golden Image**
+
+- Will implement the concept of golden image to maintain consistent runtimes.
+- Will reduces the application startup by around 70-80%.
+- Will reduces drifts caused due to manual configuration changes at the instance level.
+
+3. **App**
+
+- Will try to implement a graphical view on historical changes from the simple text implementation(current).
+
+4. **App**
+
+- Will publish information about total drift at the account level to enhance user understanding on the current infrastructure.

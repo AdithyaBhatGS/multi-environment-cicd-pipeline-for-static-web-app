@@ -10,7 +10,9 @@ jobs:
 
   changes:
     runs-on: ubuntu-latest
+
     outputs:
+
       platform: ${{ steps.filter.outputs.platform }}
       application: ${{ steps.filter.outputs.application }}
       lt: ${{ steps.filter.outputs.lt }}
@@ -18,6 +20,7 @@ jobs:
       security: ${{ steps.filter.outputs.security }}
       storage: ${{ steps.filter.outputs.storage }}
       infrastructure: ${{ steps.filter.outputs.infrastructure }}
+
     steps:
       - name: Checkout Code
         uses: dorny/paths-filter@v4
@@ -44,8 +47,22 @@ jobs:
               - 'infra/security/**'
               - 'infra/storage/**'
 
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      env_tier: ${{ steps.vars.outputs.env_tier }}
+    steps:
+      - name: Determine Environment Tier
+        id: vars
+        run: |
+          if [ "${{ github.base_ref }}" == "prod" ]; then
+            echo "env_tier=PROD" >> $GITHUB_OUTPUT
+          else
+            echo "env_tier=DEV" >> $GITHUB_OUTPUT
+          fi
+
   validate-platform-infra:
-    needs: changes
+    needs: [changes, setup]
     if: ${{ needs.changes.outputs.platform == 'true'}}
     runs-on: ubuntu-latest
 
@@ -54,7 +71,7 @@ jobs:
       contents: read
 
     env:
-      AWS_REGION: ${{ github.base_ref == 'dev' && 'us-east-2' || github.base_ref == 'prod' && 'us-east-1' }}
+      AWS_REGION: 'us-east-1'
 
     steps:
       - name: Checkout code
@@ -63,7 +80,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ secrets.VALIDATION_ROLE_ARN }}
+          role-to-assume: ${{ secrets[format('{0}_VALIDATION_ROLE_ARN', needs.setup.outputs.env_tier )] }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install dependencies
@@ -92,7 +109,7 @@ jobs:
               --template-body file://$TEMPLATE_FILE
 
   validate-application-infra:
-    needs: changes
+    needs: [changes, setup]
     if: ${{ needs.changes.outputs.application == 'true' }}
     runs-on: ubuntu-latest
 
@@ -101,7 +118,7 @@ jobs:
       contents: read
 
     env:
-      AWS_REGION: ${{ github.base_ref == 'dev' && 'us-east-2' || github.base_ref == 'prod' && 'us-east-1' }}
+      AWS_REGION: us-east-1
 
     steps:
       - name: Checkout code
@@ -110,7 +127,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ secrets.VALIDATION_ROLE_ARN }}
+          role-to-assume: ${{ secrets[format('{0}_VALIDATION_ROLE_ARN', needs.setup.outputs.env_tier )] }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install dependencies
@@ -139,7 +156,7 @@ jobs:
               --template-body file://$TEMPLATE_FILE
 
   validate-lt:
-    needs: changes
+    needs: [changes, setup]
     if: ${{ needs.changes.outputs.lt == 'true' }}
     runs-on: ubuntu-latest
 
@@ -148,7 +165,7 @@ jobs:
       contents: read
 
     env:
-      AWS_REGION: ${{ github.base_ref == 'dev' && 'us-east-2' || github.base_ref == 'prod' && 'us-east-1' }}
+      AWS_REGION: 'us-east-1'
 
     steps:
       - name: Checkout code
@@ -157,7 +174,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ secrets.VALIDATION_ROLE_ARN }}
+          role-to-assume: ${{ secrets[format('{0}_VALIDATION_ROLE_ARN', needs.setup.outputs.env_tier )] }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install dependencies
@@ -186,7 +203,7 @@ jobs:
               --template-body file://$TEMPLATE_FILE
 
   validate-network-infra:
-    needs: changes
+    needs: [changes, setup]
     if: ${{ needs.changes.outputs.network == 'true' }}
     runs-on: ubuntu-latest
 
@@ -195,7 +212,7 @@ jobs:
       contents: read
 
     env:
-      AWS_REGION: ${{ github.base_ref == 'dev' && 'us-east-2' || github.base_ref == 'prod' && 'us-east-1' }}
+      AWS_REGION: 'us-east-1'
 
     steps:
       - name: Checkout code
@@ -204,7 +221,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ secrets.VALIDATION_ROLE_ARN }}
+          role-to-assume: ${{ secrets[format('{0}_VALIDATION_ROLE_ARN', needs.setup.outputs.env_tier )] }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install dependencies
@@ -233,7 +250,7 @@ jobs:
               --template-body file://$TEMPLATE_FILE
   
   validate-security-infra:
-    needs: changes
+    needs: [changes, setup]
     if: ${{ needs.changes.outputs.security == 'true' }}
     runs-on: ubuntu-latest
 
@@ -242,7 +259,7 @@ jobs:
       contents: read
 
     env:
-      AWS_REGION: ${{ github.base_ref == 'dev' && 'us-east-2' || github.base_ref == 'prod' && 'us-east-1' }}
+      AWS_REGION: 'us-east-1'
 
     steps:
       - name: Checkout code
@@ -251,7 +268,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ secrets.VALIDATION_ROLE_ARN }}
+          role-to-assume: ${{ secrets[format('{0}_VALIDATION_ROLE_ARN', needs.setup.outputs.env_tier )] }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install dependencies
@@ -280,7 +297,7 @@ jobs:
               --template-body file://$TEMPLATE_FILE
   
   validate-storage-infra:
-    needs: changes
+    needs: [changes, setup]
     if: ${{ needs.changes.outputs.storage == 'true' }}
     runs-on: ubuntu-latest
 
@@ -289,7 +306,7 @@ jobs:
       contents: read
 
     env:
-      AWS_REGION: ${{ github.base_ref == 'dev' && 'us-east-2' || github.base_ref == 'prod' && 'us-east-1' }}
+      AWS_REGION: 'us-east-1'
 
     steps:
       - name: Checkout code
@@ -298,7 +315,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ secrets.VALIDATION_ROLE_ARN }}
+          role-to-assume: ${{ secrets[format('{0}_VALIDATION_ROLE_ARN', needs.setup.outputs.env_tier )] }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install dependencies

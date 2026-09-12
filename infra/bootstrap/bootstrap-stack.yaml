@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Stack to construct the baseline. It includes OIDC, Permissions Boundary, Execution Roles, Deployment Roles
+Description: Stack to construct the baseline. It includes OIDC, Permissions Boundary, Execution Roles, Deployment Roles, Validation Roles.
 
 Parameters:
   Environment:
@@ -249,11 +249,14 @@ Resources:
 
           - Effect: Allow
             Action:
+              - ssm:GetParameters
               - ssm:GetParameter
               - ssm:PutParameter
               - ssm:DeleteParameter
+              - ssm:DeleteParameters
               - ssm:AddTagsToResource
               - ssm:RemoveTagsFromResource
+              - ssm:ListTagsForResource
             Resource:
               - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/portfolio/*"
   AppInfraExecutionPolicy:
@@ -294,19 +297,13 @@ Resources:
               - ssm:DeleteParameters
               - ssm:AddTagsToResource
               - ssm:RemoveTagsFromResource
+              - ssm:ListTagsForResource
             Resource:
               - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/portfolio/*"
               - !Sub "arn:aws:ssm:${AWS::Region}::parameter/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
 
           - Effect: Allow
-            Action:
-              - dynamodb:PutItem
-              - dynamodb:GetItem
-              - dynamodb:Scan
-              - dynamodb:CreateTable
-              - dynamodb:DescribeTable
-              - dynamodb:ListTables
-              - dynamodb:TagResource
+            Action: 'dynamodb:*'
             Resource: '*'
 
           - Effect: Allow

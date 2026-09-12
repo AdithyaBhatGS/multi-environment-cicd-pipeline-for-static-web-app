@@ -16,7 +16,7 @@ concurrency:
   queue: max
 
 env:
-  AWS_REGION: ${{ github.ref == 'refs/heads/prod' && 'us-east-1' || 'us-east-2' }}
+  AWS_REGION: us-east-1
   ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || 'dev'}}
 
 jobs:
@@ -68,7 +68,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6.1.0
         with:
-          role-to-assume: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_APP_DEPLOY_ROLE_ARN || secrets.PROD_APP_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_APP_DEPLOYMENT_ROLE_ARN || secrets.PROD_APP_DEPLOYMENT_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Download Build Artifact
