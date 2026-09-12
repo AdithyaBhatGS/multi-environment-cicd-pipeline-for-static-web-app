@@ -10,7 +10,9 @@ jobs:
 
   changes:
     runs-on: ubuntu-latest
+
     outputs:
+
       platform: ${{ steps.filter.outputs.platform }}
       application: ${{ steps.filter.outputs.application }}
       lt: ${{ steps.filter.outputs.lt }}
@@ -18,6 +20,7 @@ jobs:
       security: ${{ steps.filter.outputs.security }}
       storage: ${{ steps.filter.outputs.storage }}
       infrastructure: ${{ steps.filter.outputs.infrastructure }}
+
     steps:
       - name: Checkout Code
         uses: dorny/paths-filter@v4
@@ -47,15 +50,15 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      role_arn: ${{ steps.vars.outputs.role_arn }}
+      env_tier: ${{ steps.vars.outputs.env_tier }}
     steps:
-      - name: Determine Role ARN
+      - name: Determine Environment Tier
         id: vars
         run: |
           if [ "${{ github.base_ref }}" == "prod" ]; then
-            echo "role_arn=${{ secrets.PROD_VALIDATION_ROLE_ARN }}" >> $GITHUB_OUTPUT
+            echo "env_tier=PROD" >> $GITHUB_OUTPUT
           else
-            echo "role_arn=${{ secrets.DEV_VALIDATION_ROLE_ARN }}" >> $GITHUB_OUTPUT
+            echo "env_tier=DEV" >> $GITHUB_OUTPUT
           fi
 
   validate-platform-infra:
@@ -77,7 +80,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ needs.setup.outputs.role_arn }}
+          role-to-assume: ${{ secrets[format('{0}_VALIDATION_ROLE_ARN', needs.setup.outputs.env_tier )] }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install dependencies
@@ -115,7 +118,7 @@ jobs:
       contents: read
 
     env:
-      AWS_REGION: 'us-east-1'
+      AWS_REGION: us-east-1
 
     steps:
       - name: Checkout code
@@ -124,7 +127,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ needs.setup.outputs.role_arn }}
+          role-to-assume: ${{ secrets[format('{0}_VALIDATION_ROLE_ARN', needs.setup.outputs.env_tier )] }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install dependencies
@@ -171,7 +174,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ needs.setup.outputs.role_arn }}
+          role-to-assume: ${{ secrets[format('{0}_VALIDATION_ROLE_ARN', needs.setup.outputs.env_tier )] }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install dependencies
@@ -218,7 +221,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ needs.setup.outputs.role_arn }}
+          role-to-assume: ${{ secrets[format('{0}_VALIDATION_ROLE_ARN', needs.setup.outputs.env_tier )] }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install dependencies
@@ -265,7 +268,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ needs.setup.outputs.role_arn }}
+          role-to-assume: ${{ secrets[format('{0}_VALIDATION_ROLE_ARN', needs.setup.outputs.env_tier )] }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install dependencies
@@ -312,7 +315,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ needs.setup.outputs.role_arn }}
+          role-to-assume: ${{ secrets[format('{0}_VALIDATION_ROLE_ARN', needs.setup.outputs.env_tier )] }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install dependencies

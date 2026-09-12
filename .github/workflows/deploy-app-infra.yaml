@@ -93,7 +93,7 @@ jobs:
       - name: Configure AWS credentials for dev
         uses: aws-actions/configure-aws-credentials@v6.1.0
         with:
-          role-to-assume: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_APP_INFRA_DEPLOY_ROLE_ARN || secrets.PROD_APP_INFRA_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_APP_INFRA_DEPLOYMENT_ROLE_ARN || secrets.PROD_APP_INFRA_DEPLOYMENT_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install Dependencies
@@ -185,7 +185,7 @@ jobs:
       - name: Configure AWS credentials for dev
         uses: aws-actions/configure-aws-credentials@v6.1.0
         with:
-          role-to-assume: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_APP_INFRA_DEPLOY_ROLE_ARN || secrets.PROD_APP_INFRA_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_APP_INFRA_DEPLOYMENT_ROLE_ARN || secrets.PROD_APP_INFRA_DEPLOYMENT_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install Dependencies
@@ -302,8 +302,7 @@ jobs:
       contents: read
 
     env:
-      DEV_REGION: us-east-2
-      PROD_REGION: us-east-1
+      AWS_REGION: us-east-1
       DEV_EXECUTION_ROLE_ARN: ${{ secrets.DEV_APP_INFRA_EXECUTION_ROLE_ARN }}
       PROD_EXECUTION_ROLE_ARN: ${{ secrets.PROD_APP_INFRA_EXECUTION_ROLE_ARN }}
 
@@ -317,7 +316,7 @@ jobs:
             echo "ENV=dev" >> "${GITHUB_ENV}"
             echo "AWS_REGION=${DEV_REGION}" >> "${GITHUB_ENV}"
           elif [[ "${GITHUB_REF}" == "refs/heads/prod" ]]; then
-            echo "ENV=prod" >> $GITHUB_ENV
+            echo "ENV=prod" >> "${GITHUB_ENV}"
             echo "AWS_REGION=${PROD_REGION}" >> "${GITHUB_ENV}"
           else
             echo "${GITHUB_REF} is invalid..."
@@ -326,7 +325,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6.1.0
         with:
-          role-to-assume: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_APP_INFRA_DEPLOY_ROLE_ARN || secrets.PROD_APP_INFRA_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_APP_INFRA_DEPLOYMENT_ROLE_ARN || secrets.PROD_APP_INFRA_DEPLOYMENT_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install Dependencies

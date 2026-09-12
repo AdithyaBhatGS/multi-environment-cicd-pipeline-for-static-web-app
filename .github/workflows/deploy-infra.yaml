@@ -47,7 +47,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6.1.0
         with:
-          role-to-assume: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_INFRA_DEPLOY_ROLE_ARN || secrets.PROD_INFRA_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_INFRA_DEPLOYMENT_ROLE_ARN || secrets.PROD_INFRA_DEPLOYMENT_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install Dependencies
