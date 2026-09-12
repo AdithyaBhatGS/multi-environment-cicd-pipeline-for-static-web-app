@@ -18,7 +18,7 @@ concurrency:
   queue: max
 
 env:
-  AWS_REGION: 'us-east-1'
+  AWS_REGION: us-east-1
   ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'prod' || 'dev'}}
 
 jobs:
@@ -302,25 +302,12 @@ jobs:
       contents: read
 
     env:
-      AWS_REGION: us-east-1
       DEV_EXECUTION_ROLE_ARN: ${{ secrets.DEV_APP_INFRA_EXECUTION_ROLE_ARN }}
       PROD_EXECUTION_ROLE_ARN: ${{ secrets.PROD_APP_INFRA_EXECUTION_ROLE_ARN }}
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v7
-
-      - name: Set Environment
-        run: |
-          if [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
-            echo "ENV=dev" >> "${GITHUB_ENV}"
-            echo "AWS_REGION=${DEV_REGION}" >> "${GITHUB_ENV}"
-          elif [[ "${GITHUB_REF}" == "refs/heads/prod" ]]; then
-            echo "ENV=prod" >> "${GITHUB_ENV}"
-            echo "AWS_REGION=${PROD_REGION}" >> "${GITHUB_ENV}"
-          else
-            echo "${GITHUB_REF} is invalid..."
-          fi
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6.1.0
@@ -340,11 +327,11 @@ jobs:
           set -e
 
           echo "=================================================================="
-          echo "============= Processing stack: ${ENV}-${STACK}-stack =============="
+          echo "============= Processing stack: ${ENVIRONMENT}-${STACK}-stack =============="
           echo "=================================================================="
 
           TEMPLATE_FILE="infra/${STACK}/${STACK}-stack.yaml"
-          PARAMS_FILE="infra/${STACK}/${ENV}.json"
+          PARAMS_FILE="infra/${STACK}/${ENVIRONMENT}.json"
 
           echo "-> Running yamllint..."
           yamllint $TEMPLATE_FILE
@@ -354,10 +341,10 @@ jobs:
 
           echo "-> Validating CloudFormation template..."
           aws cloudformation validate-template --template-body file://$TEMPLATE_FILE
-          
-          STACK_NAME="${ENV}-${STACK}-stack"
 
-          if [[ "$ENV" == "dev" ]]; then
+          STACK_NAME="${ENVIRONMENT}-${STACK}-stack"
+
+          if [[ "$ENVIRONMENT" == "dev" ]]; then
             ROLE_ARN="${DEV_EXECUTION_ROLE_ARN}"
           else
             ROLE_ARN="${PROD_EXECUTION_ROLE_ARN}"
